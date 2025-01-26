@@ -1,0 +1,100 @@
+import( "h07_02.msg" );
+import( "dialogue.msg" );
+import( "vars.flow" );
+
+int getGameNumber() 
+{
+    int i;
+    for (i = 0; i < GAME_COUNT; i++) 
+    {
+        if (GET_DAY(GAME_MONTHS[i], GAME_DAYS[i])) 
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int checkAnswer(int selected, int correct) 
+{
+    if (selected == 0 && correct == 1) 
+    {
+        return 1;
+    }
+    
+    if (selected == 1 && correct == 2)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+void givePoints(int statType) 
+{
+    if (statType == 0) {
+        MSG(GameShow1_ANS_Academics);
+    }
+    else if (statType == 1) {
+        MSG(GameShow1_ANS_Charm);
+    }
+    else if (statType == 2) {
+        MSG(GameShow1_ANS_Courage);
+    }
+    
+    ADD_PC_STAT(statType, 2);
+    MSG_WND_CLS();
+}
+
+// Procedure Index: 19
+void HIT_SCRIPT_05_hook()
+
+    int dayIndex;
+    int playerAnswer;
+    int isCorrect;
+    
+    if (BIT_CHK(4568)) 
+    {
+        MSG_WND_DSP();
+        MSG(AlreadyWatchedToday);
+        MSG_WND_CLS();
+        return;
+    }
+
+    dayIndex = getGameNumber();
+    if (dayIndex == -1) 
+    {
+        MSG_WND_DSP();
+        MSG(BORINGTV);
+        MSG_WND_CLS();
+        return;
+    }
+
+    
+    MSG_WND_DSP();
+    MSG(GameShow1 + dayIndex);
+    MSG_WND_CLS();
+
+    playerAnswer = SEL(GameShow1_SEL + dayIndex);
+
+    MSG_WND_DSP();
+    MSG(GameShow1_ANS + dayIndex);
+    MSG_WND_CLS();
+
+    isCorrect = checkAnswer(playerAnswer, CORRECT_ANSWERS[dayIndex]);
+    
+    MSG_WND_DSP();
+    if (isCorrect) 
+    {
+        MSG(GameShow_1_ANS_T);
+        givePoints(SOCIAL_STATS[dayIndex]);
+        MSG_WND_CLS();
+    } 
+    else 
+    {
+        MSG(GameShow1_ANS_F);
+        MSG_WND_CLS();
+    }
+}
