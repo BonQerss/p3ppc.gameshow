@@ -106,6 +106,6 @@ void HIT_SCRIPT_05_hook()
         MSG_WND_CLS();
     }
 	
-	BIT_ON(4568);
+	BIT_ON(4568); // TODO: Figure out how to disable every day in the morning.
 	return;
 }
