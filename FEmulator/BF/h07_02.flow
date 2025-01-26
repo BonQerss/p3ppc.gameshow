@@ -97,4 +97,7 @@ void HIT_SCRIPT_05_hook()
         MSG(GameShow1_ANS_F);
         MSG_WND_CLS();
     }
+	
+	BIT_ON(4568);
+	return;
 }
