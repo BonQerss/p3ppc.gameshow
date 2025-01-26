@@ -61,7 +61,9 @@ void HIT_SCRIPT_05_hook()
         MSG(AlreadyWatchedToday);
         MSG_WND_CLS();
         return;
-    }
+	}
+	
+	
 
     dayIndex = getGameNumber();
     if (dayIndex == -1) 
@@ -71,6 +73,12 @@ void HIT_SCRIPT_05_hook()
         MSG_WND_CLS();
         return;
     }
+	if ( dayIndex > -1 )
+	{
+		MSG_WND_DSP();
+		MSG(OHLOOKTHERES);
+		MSG_WND_CLS();
+	}
 
     
     MSG_WND_DSP();

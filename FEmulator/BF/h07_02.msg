@@ -19,3 +19,6 @@
 
 [msg BORINGTV]
 [s][f 3 1 1 0 0 0]> There's nothing interesting on.[n][f 1 3 65535][w][e]
+
+[msg OHLOOKTHERES]
+[s][f 3 1 1 0 0 0]> There's a game show playing on TV.[n][f 1 3 65535][w][e]
