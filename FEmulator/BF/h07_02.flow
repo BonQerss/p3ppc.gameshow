@@ -2,110 +2,88 @@ import( "h07_02.msg" );
 import( "dialogue.msg" );
 import( "vars.flow" );
 
-int getGameNumber() 
+void SCR_e338_303_hook()
 {
-    int i;
-    for (i = 0; i < GAME_COUNT; i++) 
-    {
-        if (GET_DAY(GAME_MONTHS[i], GAME_DAYS[i])) 
-        {
-            return i;
-        }
-    }
-    return -1;
-}
-
-int checkAnswer(int selected, int correct) 
-{
-    if (selected == 0 && correct == 1) 
-    {
-        return 1;
-    }
-    
-    if (selected == 1 && correct == 2)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-void givePoints(int statType) 
-{
-    if (statType == 0) {
-        MSG(GameShow1_ANS_Academics);
-    }
-    else if (statType == 1) {
-        MSG(GameShow1_ANS_Charm);
-    }
-    else if (statType == 2) {
-        MSG(GameShow1_ANS_Courage);
-    }
-    
-    ADD_PC_STAT(statType, 2);
-    MSG_WND_CLS();
-}
-
-// Procedure Index: 19
-void HIT_SCRIPT_05_hook()
-
-    int dayIndex;
-    int playerAnswer;
-    int isCorrect;
-    
-    if (BIT_CHK(4568)) 
+    if (BIT_CHK(4568)) // TODO: Figure out how to reset this everyday
     {
         MSG_WND_DSP();
         MSG(AlreadyWatchedToday);
         MSG_WND_CLS();
         return;
-	}
-	
-	
-
-    dayIndex = getGameNumber();
-    if (dayIndex == -1) 
+    }
+    
+    int gameDayIndex = -1;
+    int socialStatIndex = -1;
+    int correctAnswerIndex = -1;
+    bool correctAnswer = false;
+    
+    int i = 0;
+    while (i < count)
     {
-        MSG_WND_DSP();
-        MSG(BORINGTV);
-        MSG_WND_CLS();
+        if (GET_DAY(months[i], days[i]))
+        {
+            gameDayIndex = i;
+            socialStatIndex = stats[i];
+            correctAnswerIndex = answers[i];
+            break;
+        }
+        i = i + 1;
+    }
+    
+    if (gameDayIndex == -1)
+    {
         return;
     }
-	if ( dayIndex > -1 )
-	{
-		MSG_WND_DSP();
-		MSG(OHLOOKTHERES);
-		MSG_WND_CLS();
-	}
-
     
     MSG_WND_DSP();
-    MSG(GameShow1 + dayIndex);
+    MSG((GameShow1 + gameDayIndex));
     MSG_WND_CLS();
-
-    playerAnswer = SEL(GameShow1_SEL + dayIndex);
-
-    MSG_WND_DSP();
-    MSG(GameShow1_ANS + dayIndex);
-    MSG_WND_CLS();
-
-    isCorrect = checkAnswer(playerAnswer, CORRECT_ANSWERS[dayIndex]);
     
-    MSG_WND_DSP();
-    if (isCorrect) 
+    int selectedAnswer = SEL(GameShow1_SEL + gameDayIndex);
+    
+    if ((selectedAnswer == 0 && correctAnswerIndex == 1) || 
+        (selectedAnswer == 1 && correctAnswerIndex == 2))
     {
+        correctAnswer = true;
+    }
+    else
+    {
+        correctAnswer = false;
+    }
+    
+    MSG_WND_DSP();
+    MSG((GameShow1_ANS + gameDayIndex));
+    MSG_WND_CLS();
+    
+    if (correctAnswer)
+    {
+        MSG_WND_DSP();
         MSG(GameShow_1_ANS_T);
-        givePoints(SOCIAL_STATS[dayIndex]);
+        
+        if (socialStatIndex == 0)
+        {
+            MSG(GameShow1_ANS_Academics);
+            ADD_PC_STAT(0, 2);
+        }
+        else if (socialStatIndex == 1)
+        {
+            MSG(GameShow1_ANS_Charm);
+            ADD_PC_STAT(1, 2);
+        }
+        else if (socialStatIndex == 2)
+        {
+            MSG(GameShow1_ANS_Courage);
+            ADD_PC_STAT(2, 2);
+        }
+        
         MSG_WND_CLS();
-    } 
-    else 
+    }
+    else
     {
+        MSG_WND_DSP();
         MSG(GameShow1_ANS_F);
         MSG_WND_CLS();
     }
-	
-	BIT_ON(4568); // TODO: Figure out how to disable every day in the morning.
-	return;
+}
+}
 }
